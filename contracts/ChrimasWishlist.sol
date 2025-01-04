@@ -1,54 +1,58 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+contract ChristMasWishlist{
+    //code goes here
 
-contract chrisMasWishList {
-   string public owner; // Sto the name of wish list owner
-   uint public totalItems; // Track the total number of items in the wish list (though it's not updated in the code)
-   bool public ispublic; // Determines whether the wish list is public or private
+     //VARIABLES AND DATA TYPES
 
-   string[] public wishlist;
-   mapping(address => string[]) public userWishlist;
-   
-    // Function to add an item to the calling user's wish list
-    // `item` is the name of the item being added
-    function addItem(string memory item) public {
-        userWishlist[msg.sender].push(item);
-    }
+    // TYPES OF VARIABLES -variables are used to store data 
+    //state variables -stored permanently on the blockchain, accessed/modified by internal or external function calls from within the contract
+    //local variables - temporary variables, defined inside of a funtion
+    //global variables -predefined variables that can be accessed from any part of the contract, decleared outside of a contract
 
-    // Function to retrieve the calling user's wish list
-    // Returns an array of items in the user's wish list
-    function getWishList() public view returns (string[] memory) {
-        return  userWishlist[msg.sender];
-    }
+     //Data Types
+     //bool: boolean data type used to store true or false values
+     //uint: unit data type used to store unsigned integers/non-negative numbers e.g uni16
+     //int: -used to store signed data type e.g -12
+     //string: -used to store string data types in a variable
+     //Address: used to store wallet and smart contract addresses
 
-    // Function to toggle the visibility of the wish list (public or private)
-    // `status` indicates whether the wish list should be public (true) or private (false)
-    function toggleVisibility(bool status) public {
-        ispublic = status;
-    }
+     string public owner;
+     uint public totalItems;
+     bool public isPublic;
 
-    // Share an item from the caller's wish list with another user
-    function shareItem(address recipient, string memory item) public {
-    bool itemExists = false; // Check if the item exists in the sender's wish list
-    
-    for (uint i = 0; i < userWishlist[msg.sender].length; i++) {
-        if (keccak256(abi.encodePacked(userWishlist[msg.sender][i])) == keccak256(abi.encodePacked(item))) {
-            itemExists = true;
-            break;
-        }
-    }
+     //An array to hold wishlist items
+     //A mapping to link users with their lists
+     string[] public wishlist;
+     mapping(address =>string[]) public userWishlists;
 
-    require(itemExists, "Item does not exist in your wish list.");
+     function addItems(string memory item) public{
+        userWishlists[msg.sender].push(item);
+     }
 
-    // Add the item to the recipient's wish list
-      userWishlist[recipient].push(item);
-    }
+function getWishlists() public view returns (string[] memory) {
+    return userWishlists[msg.sender];
 
-    // Function to delete all items from a specific user's wish list
-    // Only clears the array, does not delete individual items
-    function deleteItem(address list) public  {
-        require(list == msg.sender, "You can only delete your own wish list.");
-        delete userWishlist[list];
-    }
+}
+
+function toggleVisibility(bool status) public {
+    isPublic = status;
+}
+
+//A function to remove an item from the wishlists
+function removeItem() public {
+    userWishlists[msg.sender].pop();
+}
+
+// Mapping to store wishlist visibility status
+mapping(address => bool) public publicWishlists;
+
+// Event to notify when a wishlist's visibility changes
+event WishlistVisibilityChanged(address indexed user, bool isPublic);
+
+//function to share the Wishlist publicly
+function shareWishlist(bool isPublic) public {
+    publicWishlists[msg.sender] = isPublic;
+}
 
 }
